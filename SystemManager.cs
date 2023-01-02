@@ -274,21 +274,6 @@ namespace ACS_4Series_Template_V2
                     {
                         this.wholeHouseSubsysScenario = new WholeHouseSubsystemScenarios.WholeHouseSubsystemScenarioConfig();
                         WholeHouseSubsystemScenarioZ[wholeHouseSubsystemScenario.scenarioNumber] = this.wholeHouseSubsysScenario;
-
-                        //ushort d = (ushort)WholeHouseSubsystemScenarioZ[1].WholeHouseSubsysScenarios.Count;
-                        //CrestronConsole.PrintLine("5 !!!!!!!!!!!!!!!!!!!!!!!!   {0}&&&&&&&&&&&&&&&&&&", d);
-
-
-
-                        CrestronConsole.PrintLine("1 !!!!!!!!!!!!!!!!!!!!!!!!  count {0} &&&&&&&&&&&& &&&&&&", WholeHouseSubsystemScenarioZ.Count);
-                        ushort wat = wholeHouseSubsystemScenario.scenarioNumber;
-                        CrestronConsole.PrintLine("2 !!!!!!!!!!!!!!!!!!!!!!!! scenario#  {0} &&&&&&&&&&&& &&&&&&", wat);
-                        ushort f = (ushort)wholeHouseSubsystemScenario.IncludedSubsystems.Count;
-                        CrestronConsole.PrintLine("3 !!!!!!!!!!!!!!!!!!!!!!!! IncludedSubsystems.Count  {0} &&&&&&&&&&&&&&&&&&", f);
-                        ushort e = wholeHouseSubsystemScenario.IncludedSubsystems[0].subsystemNumber;
-                        CrestronConsole.PrintLine("4 !!!!!!!!!!!!!!!!!!!!!!!!  subsysnum {0} &&&&&&&&&&&&&&&&&&", e);
-                        ushort dd = (ushort)wholeHouseSubsystemScenario.IncludedSubsystems[0].IncludedRooms.Count;
-                        CrestronConsole.PrintLine("4 !!!!!!!!!!!!!!!!!!!!!!!!  number of rooms {0} &&&&&&&&&&&&&&&&&&", dd);
                         
                     }
                     catch (Exception e)
@@ -305,7 +290,7 @@ namespace ACS_4Series_Template_V2
                     try
                     {
                         this.musicSource = new MusicSources.MusicSourceConfig(musicSource.Number, musicSource.Name, musicSource.IconSerial, musicSource.IconHTML, musicSource.AnalogModeNumber, musicSource.NaxBoxNumber, musicSource.SwitcherInputNumber, musicSource.StreamingProviderNumber, musicSource.MultiCastAddress, musicSource.FlipsToPageNumber, musicSource.EquipID);
-                        CrestronConsole.PrintLine("musicSource {0} - {1}", musicSource.Number, musicSource.Name);
+                        //CrestronConsole.PrintLine("musicSource {0} - {1}", musicSource.Number, musicSource.Name);
                         this.musicSource.InUse = false;
                         this.MusicSourceZ[musicSource.Number] = this.musicSource;
                     }
@@ -323,7 +308,7 @@ namespace ACS_4Series_Template_V2
                     {
                         //ushort subSystemsCount = (ushort)(config.Subsystems.Length);
                         this.aSrcScenario = new AudioSrcScenarios.AudioSrcScenariosConfig(AudioSrcScenario.Number, AudioSrcScenario.IncludedSources, AudioSrcScenario.ReceiverInputs);
-                        CrestronConsole.PrintLine("audioSrcScenario {0} # of items {1}", aSrcScenario.Number, aSrcScenario.IncludedSources.Count);
+                        //CrestronConsole.PrintLine("audioSrcScenario {0} # of items {1}", aSrcScenario.Number, aSrcScenario.IncludedSources.Count);
                         this.AudioSrcScenarioZ[AudioSrcScenario.Number] = this.aSrcScenario;
                     }
                     catch (Exception e)
@@ -338,9 +323,8 @@ namespace ACS_4Series_Template_V2
                 {
                     try
                     {
-                        //ushort subSystemsCount = (ushort)(config.Subsystems.Length);
                         this.aSrcSharingScenario = new AudioSrcSharingScenarios.AudioSrcSharingScenariosConfig(AudioSrcSharingScenario.Number, AudioSrcSharingScenario.IncludedZones);
-                        CrestronConsole.PrintLine("audioSrcSharingScenario {0} # of items {1}", aSrcSharingScenario.Number, aSrcSharingScenario.IncludedZones.Count);
+                        //CrestronConsole.PrintLine("audioSrcSharingScenario {0} # of items {1}", aSrcSharingScenario.Number, aSrcSharingScenario.IncludedZones.Count);
                         this.AudioSrcSharingScenarioZ[AudioSrcSharingScenario.Number] = this.aSrcSharingScenario;
                     }
                     catch (Exception e)
@@ -355,9 +339,8 @@ namespace ACS_4Series_Template_V2
                 {
                     try
                     {
-                        //ushort subSystemsCount = (ushort)(config.Subsystems.Length);
                         this.videoSource = new VideoSources.VideoSourceConfig(videoSource.Number, videoSource.Name, videoSource.DisplayName, videoSource.IconSerial, videoSource.IconHTML, videoSource.AnalogModeNumber, videoSource.VidSwitcherInputNumber, videoSource.AudSwitcherInputNumber, videoSource.MultiCastAddress, videoSource.FlipsToPageNumber, videoSource.EquipID);
-                        CrestronConsole.PrintLine("videoSource {0} - {1}", videoSource.Number, videoSource.Name);
+                        //CrestronConsole.PrintLine("videoSource {0} - {1}", videoSource.Number, videoSource.Name);
                         this.videoSource.InUse = false;
                         this.VideoSourceZ[videoSource.Number] = this.videoSource;
                     }
@@ -373,9 +356,8 @@ namespace ACS_4Series_Template_V2
                 {
                     try
                     {
-                        //ushort subSystemsCount = (ushort)(config.Subsystems.Length);
                         this.vidSrcScenario = new VideoSrcScenarios.VideoSrcScenariosConfig(VideoSrcScenario.Number, VideoSrcScenario.IncludedSources, VideoSrcScenario.DisplayInputs, VideoSrcScenario.ReceiverInputs, VideoSrcScenario.AltSwitcherInputs);
-                        CrestronConsole.PrintLine("videoSrcScenario {0} # of items {1}", vidSrcScenario.Number, vidSrcScenario.IncludedSources.Count);
+                        //CrestronConsole.PrintLine("videoSrcScenario {0} # of items {1}", vidSrcScenario.Number, vidSrcScenario.IncludedSources.Count);
                         this.VideoSrcScenarioZ[VideoSrcScenario.Number] = this.vidSrcScenario;
                     }
                     catch (Exception e)
@@ -394,7 +376,7 @@ namespace ACS_4Series_Template_V2
                         this.videoDisplay.CurrentVideoSrc = 0;
                         this.VideoDisplayZ[VideoDisplay.Number] = this.videoDisplay;
                         
-                        CrestronConsole.PrintLine("Video Display {0}", VideoDisplay.DisplayName);
+                        //CrestronConsole.PrintLine("Video Display {0}", VideoDisplay.DisplayName);
                     }
                     catch (Exception e)
                     {
@@ -410,7 +392,7 @@ namespace ACS_4Series_Template_V2
                     try
                     {
                         this.videoConfigScenario = new VidConfigScenarios.VidConfigScenariosConfig(vidConfigScenario.Number, vidConfigScenario.SendToSpeakers, vidConfigScenario.OffSubScenarioNum, vidConfigScenario.HasReceiver, vidConfigScenario.ReceiverHasVolFB, vidConfigScenario.ReceiverInputDelay, vidConfigScenario.MusicThroughReceiver, vidConfigScenario.ReceiverHasBreakawayAudio, vidConfigScenario.MusicHasVolFB, vidConfigScenario.VideoVolThroughDistAudio, vidConfigScenario.DisplayInputDelay, vidConfigScenario.TvHasVolFB);
-                        CrestronConsole.PrintLine("vidConfigScenario {0} has AVR? {1}", vidConfigScenario.Number, vidConfigScenario.HasReceiver);
+                        //CrestronConsole.PrintLine("vidConfigScenario {0} has AVR? {1}", vidConfigScenario.Number, vidConfigScenario.HasReceiver);
                         this.VideoConfigScenarioZ[vidConfigScenario.Number] = this.videoConfigScenario;
                     }
                     catch (Exception e)
@@ -424,8 +406,7 @@ namespace ACS_4Series_Template_V2
                     try 
                     {
                         this.liftScenario = new LiftScenarios.LiftScenariosConfig(liftScen.Number, liftScen.ButtonLabel, liftScen.OpenWithOnCmdNum, liftScen.CloseWithOffCmdNum, liftScen.LiftCmds);
-                        //this.liftScenario = new LiftScenarios.LiftScenariosConfig(liftScen.Number, liftScen.ButtonLabel, liftScen.OpenWithOnCmdNum, liftScen.CloseWithOffCmdNum, this.liftCmd);
-                        CrestronConsole.PrintLine("lift Scenario #{0} cnt{1} ", liftScenario.Number, liftScenario.LiftCmds.Count());
+                        //CrestronConsole.PrintLine("lift Scenario #{0} cnt{1} ", liftScenario.Number, liftScenario.LiftCmds.Count());
                         this.LiftScenarioZ[liftScen.Number] = this.liftScenario;
                     }
                     catch (Exception e)
@@ -437,9 +418,8 @@ namespace ACS_4Series_Template_V2
             if (config.LiftCommands != null){
                 foreach (var liftCommand in config.LiftCommands)
                 {
-                    //this.liftScenario.LiftCmdConfigs[i] = new LiftScenarios.LiftScenariosConfig.LiftCmdConfig(liftCmd.CmdNum, liftCmd.Name, liftCmd.PulseTime);
                     liftCmd = new LiftScenarios.LiftCmdConfig(liftCommand.CmdNum, liftCommand.Name, liftCommand.PulseTime);
-                    CrestronConsole.PrintLine("liftCmd {0}", liftCmd.Name);
+                    //CrestronConsole.PrintLine("liftCmd {0}", liftCmd.Name);
                     this.LiftCmdZ[liftCommand.CmdNum] = this.liftCmd;
                 }
             }
@@ -450,7 +430,7 @@ namespace ACS_4Series_Template_V2
                     try
                     {
                         this.sleepScenario = new SleepScenarios.SleepScenariosConfig(sleepScen.Number, sleepScen.ButtonLabel, sleepScen.SleepCmds);
-                        CrestronConsole.PrintLine("sleep Scenario {0} {1} ", sleepScenario.Number, sleepScenario.SleepCmds.Count());
+                        //CrestronConsole.PrintLine("sleep Scenario {0} {1} ", sleepScenario.Number, sleepScenario.SleepCmds.Count());
                         this.SleepScenarioZ[sleepScen.Number] = this.sleepScenario;
                     }
                     catch (Exception e)
@@ -463,9 +443,8 @@ namespace ACS_4Series_Template_V2
                 foreach (var sleepCommand in config.SleepCommands)
                 {
                     sleepCmd = new SleepScenarios.SleepCmdConfig(sleepCommand.CmdNum, sleepCommand.Name, sleepCommand.Length);
-                    CrestronConsole.PrintLine("sleepCmd {0}", sleepCmd.Name);
+                    //CrestronConsole.PrintLine("sleepCmd {0}", sleepCmd.Name);
                     this.SleepCmdZ[sleepCommand.CmdNum] = this.sleepCmd;
-                    //this.sleepScenario.SleepCmdConfigs[i] = new SleepScenarios.SleepScenariosConfig.SleepCmdConfig(sleepCmd.Name, sleepCmd.Length);
                 }
             }
             if (config.FormatScenarios != null)
@@ -476,7 +455,7 @@ namespace ACS_4Series_Template_V2
                     {
 
                         this.formatScenario = new FormatScenarios.FormatScenariosConfig(formatScen.Number, formatScen.ButtonLabel, formatScen.FormatCmds);
-                        CrestronConsole.PrintLine("format Scenario {0} {1}", formatScenario.Number, formatScenario.FormatCmds.Count());
+                        //CrestronConsole.PrintLine("format Scenario {0} {1}", formatScenario.Number, formatScenario.FormatCmds.Count());
                         this.FormatScenarioZ[formatScen.Number] = this.formatScenario;
                     }
                     catch (Exception e)
@@ -490,7 +469,7 @@ namespace ACS_4Series_Template_V2
                 {
                     formatCmd = new FormatScenarios.FormatCmdConfig(formatCommand.CmdNum, formatCommand.Name);
                     this.FormatCmdZ[formatCommand.CmdNum] = this.formatCmd;
-                    CrestronConsole.PrintLine("format {0}", formatCmd.Name);
+                    //CrestronConsole.PrintLine("format {0}", formatCmd.Name);
                 }
             }
         }

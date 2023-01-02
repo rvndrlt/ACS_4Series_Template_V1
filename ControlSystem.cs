@@ -24,6 +24,7 @@ namespace ACS_4Series_Template_V2
         public EthernetIntersystemCommunications roomSelectEISC, subsystemEISC, musicEISC1, musicEISC2, musicEISC3, videoEISC1, videoEISC2, videoEISC3, lightingEISC, HVACEISC, imageEISC;
         private Configuration.ConfigManager config;
         private QuickConfiguration.QuickConfigManager quickActionConfig;
+        private QuickActions.QuickActionXML quickActionXML;
         //private ConfigData.Configuration RoomConfig;
         private static CCriticalSection configLock = new CCriticalSection();
         public static bool initComplete = false;
@@ -50,7 +51,8 @@ namespace ACS_4Series_Template_V2
         /// * Initialize the maximum number of threads (max = 400)
         /// * Register devices
         /// * Register event handlers
-        /// * Add Console Commands
+        /// * Add 
+        /// Commands
         /// 
         /// Please be aware that the constructor needs to exit quickly; if it doesn't
         /// exit in time, the SIMPL#Pro program will exit.
@@ -135,6 +137,10 @@ namespace ACS_4Series_Template_V2
                 {
                     ErrorLog.Error("Unable to add 'reporthvac' command to console");
                 }
+                if (!CrestronConsole.AddNewConsoleCommand(TestWriteXML, "testwrite", "test writing to the xml file", ConsoleAccessLevelEnum.AccessOperator))
+                {
+                    ErrorLog.Error("Unable to add 'testwrite' command to console");
+                }
                 CrestronConsole.PrintLine("starting program {0}", this.ProgramNumber);
 
             }
@@ -193,6 +199,15 @@ namespace ACS_4Series_Template_V2
             {
                 CrestronConsole.PrintLine("src:{0}", src.ToString());
             }
+        }
+
+        public void TestWriteXML(string parms)
+        {
+            CrestronConsole.PrintLine("parms {0}", parms);
+            this.quickActionXML.PresetName[2] = Convert.ToString(parms);
+            CrestronConsole.PrintLine("DDarms {0}", quickActionXML.PresetName[2]);
+
+            quickActionXML.writeXML(3);//the write functions subtracts 1 so it has to be highter than setting the string literal
         }
         void MainsigChangeHandler(GenericBase currentDevice, SigEventArgs args)
         {
@@ -987,6 +1002,15 @@ namespace ACS_4Series_Template_V2
             ushort wholeHouseScenarioNum = manager.touchpanelZ[TPNumber].HomePageScenario;
             ushort index = GetWholeHouseSubsystemIndex(TPNumber);
             ushort numRooms = (ushort)this.config.RoomConfig.WholeHouseSubsystemScenarios[wholeHouseScenarioNum - 1].IncludedSubsystems[index].IncludedRooms.Count;
+            string icon = "";
+            if (manager.touchpanelZ[TPNumber].HTML_UI)
+            {
+                icon = manager.SubsystemZ[subsystemNumber].IconHTML;
+            }
+            else
+            {
+                icon = manager.SubsystemZ[subsystemNumber].IconSerial;
+            }
             //update the zone list and status for the subsystem
             //figure out which subsystem
             if (manager.SubsystemZ[subsystemNumber].DisplayName.ToUpper() == "LIGHTS" || manager.SubsystemZ[subsystemNumber].DisplayName.ToUpper() == "LIGHTING")
@@ -1019,7 +1043,8 @@ namespace ACS_4Series_Template_V2
                     }
                     musicEISC3.StringInput[eiscPosition].StringValue = statusText;
                     //send the icon to the zonestatus line2 serial on the WHOLE HOUSE LIST PAGE
-                    videoEISC2.StringInput[(ushort)(eiscPosition - 300)].StringValue = manager.SubsystemZ[subsystemNumber].IconSerial;
+
+                    videoEISC2.StringInput[(ushort)(eiscPosition - 300)].StringValue = icon;
                     i++;
                 }
                 imageEISC.UShortInput[TPNumber].UShortValue = numRooms;
@@ -1040,7 +1065,7 @@ namespace ACS_4Series_Template_V2
                     string statusText = GetHVACStatusText(roomNumber, TPNumber);
 
                     musicEISC3.StringInput[eiscPosition].StringValue = statusText;
-                    videoEISC2.StringInput[(ushort)(eiscPosition - 300)].StringValue = manager.SubsystemZ[subsystemNumber].IconSerial;
+                    videoEISC2.StringInput[(ushort)(eiscPosition - 300)].StringValue = icon;
                     i++;
                 }
                 imageEISC.UShortInput[TPNumber].UShortValue = i;
@@ -1050,6 +1075,7 @@ namespace ACS_4Series_Template_V2
         {
             ushort audioIsSystemNumber = 0;
             ushort videoIsSystemNumber = 0;
+            ushort equipID = 0;
             ushort currentRoomNum = manager.touchpanelZ[TPNumber].CurrentRoomNum;
             ushort currentSubsystemScenario = manager.RoomZ[currentRoomNum].SubSystemScenario;
             ushort subsystemNumber = 0;
@@ -1099,12 +1125,18 @@ namespace ACS_4Series_Template_V2
                         imageEISC.BooleanInput[(ushort)(TPNumber + 100)].BoolValue = false;//current subsystem is NOT audio
                         imageEISC.BooleanInput[TPNumber].BoolValue = false;//current subsystem is NOT video
                     }
-                    CrestronConsole.PrintLine("select subsystem");
+                    
                     subsystemEISC.UShortInput[(ushort)(TPNumber + 100)].UShortValue = manager.SubsystemZ[subsystemNumber].FlipsToPageNumber;
                 }
                 
                 musicEISC3.StringInput[(ushort)(TPNumber + 200)].StringValue = manager.SubsystemZ[subsystemNumber].DisplayName;
-                subsystemEISC.UShortInput[(ushort)(TPNumber + 200)].UShortValue = (ushort)(manager.SubsystemZ[subsystemNumber].EquipID + TPNumber);
+                
+                if (manager.SubsystemZ[subsystemNumber].EquipID > 99) // has to be above 100 to add the TPNumber - 1-99 should be music xpoints which you shouldn't connect to anyway.
+                { 
+                    equipID = (ushort)(manager.SubsystemZ[subsystemNumber].EquipID + TPNumber); //send the EQUIPMENT ID to connect to
+                }
+                subsystemEISC.UShortInput[(ushort)(TPNumber + 200)].UShortValue = equipID;
+                CrestronConsole.PrintLine("select subsystem {0}", equipID);
             }
             else { manager.RoomZ[currentRoomNum].CurrentSubsystem = 0; }//this would be when the home button is pushed
         }
@@ -1582,7 +1614,7 @@ namespace ACS_4Series_Template_V2
         public void UpdateTPVideoMenu(ushort TPNumber)
         {
             ushort currentRoomNumber = manager.touchpanelZ[TPNumber].CurrentRoomNum;
-            CrestronConsole.PrintLine("TP-{0} room{1}", TPNumber, currentRoomNumber);
+            //CrestronConsole.PrintLine("TP-{0} room{1}", TPNumber, currentRoomNumber);
             if (manager.RoomZ[currentRoomNumber].VideoSrcScenario > 0)
             {
                 ushort numSrcs = (ushort)manager.VideoSrcScenarioZ[manager.RoomZ[currentRoomNumber].VideoSrcScenario].IncludedSources.Count;
@@ -2110,14 +2142,17 @@ namespace ACS_4Series_Template_V2
             NAXAllOffBusy = false;
             CrestronConsole.PrintLine("##############     HA FLOOR / ALL OFF CALLBACK {0}:{1}", DateTime.Now.Second, DateTime.Now.Millisecond);
         }
+        //TO DO !!!! add a lambda to send the preset number to recall and attach it to the callback
         private void SendVolumesMusicPresetCallback(object obj)
         {
             foreach (var rm in manager.RoomZ)
             {
                 ushort switcherOutputNum = rm.Value.AudioID;
+
                 if (switcherOutputNum > 0)
                 {
-                    ushort volumeToSend = quickActionManager.MusicPresetZ[musicPresetToRecall].Volumes[switcherOutputNum - 1];
+                    //ushort volumeToSend = quickActionManager.MusicPresetZ[musicPresetToRecall].Volumes[switcherOutputNum - 1];
+                    ushort volumeToSend = quickActionXML.Volumes[musicPresetToRecall - 1, switcherOutputNum - 1];//need to change musicPresetToRecall to lambda
                     musicEISC3.UShortInput[(ushort)(100 + switcherOutputNum)].UShortValue = volumeToSend;//send the volume
                 }
             }
@@ -2683,7 +2718,7 @@ namespace ACS_4Series_Template_V2
             bool htmlUI = manager.touchpanelZ[TPNumber].HTML_UI;
             string bold = "";
             string boldEnd = "";
-            if (htmlUI) { bold = "<B>"; boldEnd = "</B>"; }
+            if (!htmlUI) { bold = "<B>"; boldEnd = "</B>"; }
             ushort subsystemScenario = manager.RoomZ[roomNumber].SubSystemScenario;
             for (int i = 1; i < manager.SubsystemScenarioZ[subsystemScenario].IncludedSubsystems.Count; i++) {
                 string subName = manager.SubsystemZ[manager.SubsystemScenarioZ[subsystemScenario].IncludedSubsystems[i]].DisplayName;
@@ -2720,16 +2755,19 @@ namespace ACS_4Series_Template_V2
                     ushort switcherOutput = rm.Value.AudioID;
                     ushort currentSrc = rm.Value.CurrentMusicSrc;
                     if (switcherOutput > 0) { 
-                        quickActionManager.MusicPresetZ[presetNumber].Sources[switcherOutput - 1] = currentSrc;
-                        quickActionManager.MusicPresetZ[presetNumber].Volumes[switcherOutput - 1] = volumes[switcherOutput - 1];
+                        //quickActionManager.MusicPresetZ[presetNumber].Sources[switcherOutput - 1] = currentSrc;
+                        quickActionXML.Sources[presetNumber - 1, switcherOutput - 1] = currentSrc;
+                        //quickActionManager.MusicPresetZ[presetNumber].Volumes[switcherOutput - 1] = volumes[switcherOutput - 1];
+                        quickActionXML.Volumes[presetNumber - 1, switcherOutput - 1] = volumes[switcherOutput - 1];
                     }
                     CrestronConsole.PrintLine("presetNumber {0} switcherOutput {1} currentSrc {2}", presetNumber, switcherOutput, currentSrc);
                 }
-                this.quickActionManager.MusicPresetZ[presetNumber].PresetName = musicPresetName;
-                quickActionConfig.QuickConfig.MusicPresets[presetNumber-1].MusicPresetName = musicPresetName;
-                imageEISC.StringInput[(ushort)(presetNumber + 3100)].StringValue = quickActionManager.MusicPresetZ[presetNumber].PresetName;
+                //this.quickActionManager.MusicPresetZ[presetNumber].PresetName = musicPresetName;
+                quickActionXML.PresetName[presetNumber - 1] = musicPresetName;
+                //quickActionConfig.QuickConfig.MusicPresets[presetNumber-1].MusicPresetName = musicPresetName;
+                imageEISC.StringInput[(ushort)(presetNumber + 3100)].StringValue = musicPresetName;
 
-                CrestronConsole.PrintLine("save start {0}", this.quickActionManager.MusicPresetZ[presetNumber].PresetName);
+                CrestronConsole.PrintLine("save start {0}", musicPresetName);
 
 
                 //write to json file
@@ -2742,6 +2780,8 @@ namespace ACS_4Series_Template_V2
         {
             //TO DO - add timer to block switcher from updating panels
             //TO DO - this is causing an infinite loop. maybe dont need it
+            //TO DO !!!! add a lambda to send the preset number to recall and attach it to the callback
+
 
             //in the case that multiple zones are changing sources this delay will let the switching go through and then update the panel status later to prevent bogging down the system by calling the update function every time
             if (presetNumber > 0) { 
@@ -2755,7 +2795,8 @@ namespace ACS_4Series_Template_V2
                 {
                     ushort switcherOutputNum = rm.Value.AudioID;
                     if (switcherOutputNum > 0) {
-                        ushort musicSrcToSend = quickActionManager.MusicPresetZ[presetNumber].Sources[switcherOutputNum - 1];
+                        //ushort musicSrcToSend = quickActionManager.MusicPresetZ[presetNumber].Sources[switcherOutputNum - 1];
+                        ushort musicSrcToSend = quickActionXML.Sources[presetNumber-1, switcherOutputNum - 1];
                         //ushort volumeToSend = quickActionManager.MusicPresetZ[presetNumber].Volumes[switcherOutputNum - 1];
                         SwitcherSelectMusicSource(switcherOutputNum, musicSrcToSend);
                         //musicEISC3.UShortInput[(ushort)(100 + switcherOutputNum)].UShortValue = volumeToSend;//send the volume
@@ -2796,7 +2837,6 @@ namespace ACS_4Series_Template_V2
                 //CrestronDataStoreStatic.GlobalAccess = CrestronDataStore.CSDAFLAGS.OWNERREADWRITE & CrestronDataStore.CSDAFLAGS.OTHERREADWRITE;
 
                 foreach (var src in manager.MusicSourceZ) {
-                    CrestronConsole.PrintLine("msuic src {0}", src.Value.Name);
                     ushort srcNum = src.Key;
                     if (manager.MusicSourceZ[srcNum].NaxBoxNumber > 0) {
                         NAXsystem = true;
@@ -2812,7 +2852,7 @@ namespace ACS_4Series_Template_V2
                     {
                         roomSelectEISC.BooleanInput[tpNum].BoolValue = true;
                     }
-                    CrestronConsole.PrintLine("startup TP-{0}", tpNum);
+                    //CrestronConsole.PrintLine("startup TP-{0}", tpNum);
                 }
                 if (NAXsystem)
                 {
@@ -2926,7 +2966,7 @@ namespace ACS_4Series_Template_V2
         {
             this.config = new Configuration.ConfigManager();
             this.quickActionConfig = new QuickConfiguration.QuickConfigManager();
-
+            this.quickActionXML = new QuickActions.QuickActionXML();
 
             if (this.config.ReadConfig(@"\nvram\ACSconfig.json", true))
             {
@@ -2950,7 +2990,13 @@ namespace ACS_4Series_Template_V2
                 ErrorLog.Error("Unable to read QUICK ACTIONconfig!!!!");
                 CrestronConsole.PrintLine("unable to read QUICK ACTION config");
             }
-
+           
+            this.quickActionXML.readXML(@"\nvram\quickActionConfig.xml");
+            for (ushort x = 0; x < quickActionXML.Length; x++)
+            {
+                CrestronConsole.PrintLine("no whammy = {0} {1}", this.quickActionXML.PresetName[x], this.quickActionXML.Sources[x, 2]);
+            }
+            
             return null;
         }
         //THIS IS NOT CURRENTLY BEING USED
