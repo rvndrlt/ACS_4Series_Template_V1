@@ -205,7 +205,7 @@ namespace ACS_4Series_Template_V2
         {
             CrestronConsole.PrintLine("parms {0}", parms);
             this.quickActionXML.PresetName[2] = Convert.ToString(parms);
-            CrestronConsole.PrintLine("DDarms {0}", quickActionXML.PresetName[2]);
+            CrestronConsole.PrintLine("DDDarms {0}", quickActionXML.PresetName[2]);
 
             quickActionXML.writeXML(3);//the write functions subtracts 1 so it has to be highter than setting the string literal
         }
