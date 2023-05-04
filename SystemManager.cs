@@ -40,6 +40,7 @@ namespace ACS_4Series_Template_V1
         public Dictionary<ushort, Subsystem.SubsystemConfig> SubsystemZ = new Dictionary<ushort, ACS_4Series_Template_V1.Subsystem.SubsystemConfig>();
         public Dictionary<ushort, SubsystemScenarios.SubsystemScenarioConfig> SubsystemScenarioZ = new Dictionary<ushort, ACS_4Series_Template_V1.SubsystemScenarios.SubsystemScenarioConfig>();
         public Dictionary<ushort, WholeHouseSubsystemScenarios.WholeHouseSubsystemScenarioConfig> WholeHouseSubsystemScenarioZ = new Dictionary<ushort, ACS_4Series_Template_V1.WholeHouseSubsystemScenarios.WholeHouseSubsystemScenarioConfig>();
+
         public Dictionary<ushort, MusicSources.MusicSourceConfig> MusicSourceZ = new Dictionary<ushort, ACS_4Series_Template_V1.MusicSources.MusicSourceConfig>();
         public Dictionary<ushort, AudioSrcScenarios.AudioSrcScenariosConfig> AudioSrcScenarioZ = new Dictionary<ushort, ACS_4Series_Template_V1.AudioSrcScenarios.AudioSrcScenariosConfig>();
         public Dictionary<ushort, AudioSrcSharingScenarios.AudioSrcSharingScenariosConfig> AudioSrcSharingScenarioZ = new Dictionary<ushort, ACS_4Series_Template_V1.AudioSrcSharingScenarios.AudioSrcSharingScenariosConfig>();
@@ -65,7 +66,7 @@ namespace ACS_4Series_Template_V1
         private readonly FloorScenarios.FloorConfig flrs;
         private readonly Subsystem.SubsystemConfig subSys;
         private readonly SubsystemScenarios.SubsystemScenarioConfig subsysScenario;
-        private readonly WholeHouseSubsystemScenarios.WholeHouseSubsystemScenarioConfig wholeHouseSubsystemScenario;
+        private readonly WholeHouseSubsystemScenarios.WholeHouseSubsystemScenarioConfig wholeHouseSubsysScenario;
         private readonly MusicSources.MusicSourceConfig musicSource;
         private readonly AudioSrcScenarios.AudioSrcScenariosConfig aSrcScenario;
         private readonly AudioSrcSharingScenarios.AudioSrcSharingScenariosConfig aSrcSharingScenario;
@@ -99,6 +100,7 @@ namespace ACS_4Series_Template_V1
                         this.tp = new UI.TouchpanelUI(touchpanel.Number, touchpanel.Ipid, touchpanel.Type, touchpanel.Name, touchpanel.HTML_UI, touchpanel.HomePageScenario, touchpanel.SubSystemScenario, touchpanel.FloorScenario, touchpanel.DefaultRoom, touchpanel.ChangeRoomButtonEnable, touchpanel.ChangeRoomButtonText, touchpanel.UseAnalogModes, touchpanel.DontInheritSubsystemScenario);
                         {
                             tp.CurrentASrcGroupNum = 1;
+
                             tp.CurrentVSrcGroupNum = 1;
                             tp.CurrentRoomNum = touchpanel.DefaultRoom;
                             if (tp.Type == "Tsr310" || tp.Type == "HR310") {
@@ -110,6 +112,8 @@ namespace ACS_4Series_Template_V1
 
                         }
                         this.touchpanelZ[touchpanel.Number] = this.tp;
+                        this.touchpanelZ[touchpanel.Number].WholeHouseRoomList.Add(2);
+                        
 
                     }
                     catch (Exception e)
@@ -260,8 +264,24 @@ namespace ACS_4Series_Template_V1
                 {
                     try
                     {
-                        this.wholeHouseSubsystemScenario = new WholeHouseSubsystemScenarios.WholeHouseSubsystemScenarioConfig(wholeHouseSubsystemScenario.Number, wholeHouseSubsystemScenario.IncludedSubsystems);
-                        this.WholeHouseSubsystemScenarioZ[wholeHouseSubsystemScenario.Number] = this.wholeHouseSubsystemScenario;
+                        this.wholeHouseSubsysScenario = new WholeHouseSubsystemScenarios.WholeHouseSubsystemScenarioConfig();
+                        WholeHouseSubsystemScenarioZ[wholeHouseSubsystemScenario.scenarioNumber] = this.wholeHouseSubsysScenario;
+
+                        //ushort d = (ushort)WholeHouseSubsystemScenarioZ[1].WholeHouseSubsysScenarios.Count;
+                        //CrestronConsole.PrintLine("5 !!!!!!!!!!!!!!!!!!!!!!!!   {0}&&&&&&&&&&&&&&&&&&", d);
+
+
+
+                        CrestronConsole.PrintLine("1 !!!!!!!!!!!!!!!!!!!!!!!!  count {0} &&&&&&&&&&&& &&&&&&", WholeHouseSubsystemScenarioZ.Count);
+                        ushort wat = wholeHouseSubsystemScenario.scenarioNumber;
+                        CrestronConsole.PrintLine("2 !!!!!!!!!!!!!!!!!!!!!!!! scenario#  {0} &&&&&&&&&&&& &&&&&&", wat);
+                        ushort f = (ushort)wholeHouseSubsystemScenario.IncludedSubsystems.Count;
+                        CrestronConsole.PrintLine("3 !!!!!!!!!!!!!!!!!!!!!!!! IncludedSubsystems.Count  {0} &&&&&&&&&&&&&&&&&&", f);
+                        ushort e = wholeHouseSubsystemScenario.IncludedSubsystems[0].subsystemNumber;
+                        CrestronConsole.PrintLine("4 !!!!!!!!!!!!!!!!!!!!!!!!  subsysnum {0} &&&&&&&&&&&&&&&&&&", e);
+                        ushort dd = (ushort)wholeHouseSubsystemScenario.IncludedSubsystems[0].IncludedRooms.Count;
+                        CrestronConsole.PrintLine("4 !!!!!!!!!!!!!!!!!!!!!!!!  number of rooms {0} &&&&&&&&&&&&&&&&&&", dd);
+                        
                     }
                     catch (Exception e)
                     {

@@ -103,6 +103,8 @@ namespace ACS_4Series_Template_V1.UI
         public ushort CurrentPageNumber { get; set; }// 0 = HOME, 1 = RoomList, 2 = RoomSubsystemList
         public ushort CurrentSubsystemNumber { get; set; }
 
+        public List<ushort> WholeHouseRoomList = new List<ushort>();
+
 
         /// <summary>
         /// Register the touchpanel using the proper information
