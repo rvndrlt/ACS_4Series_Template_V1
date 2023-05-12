@@ -96,13 +96,14 @@ namespace ACS_4Series_Template_V1
                 {
                     try
                     {
-                        CrestronConsole.PrintLine("touchpanel {0} name {1} type {2}",touchpanel.Number, touchpanel.Name, touchpanel.Type);
+                        
                         this.tp = new UI.TouchpanelUI(touchpanel.Number, touchpanel.Ipid, touchpanel.Type, touchpanel.Name, touchpanel.HTML_UI, touchpanel.HomePageScenario, touchpanel.SubSystemScenario, touchpanel.FloorScenario, touchpanel.DefaultRoom, touchpanel.ChangeRoomButtonEnable, touchpanel.ChangeRoomButtonText, touchpanel.UseAnalogModes, touchpanel.DontInheritSubsystemScenario);
                         {
                             tp.CurrentASrcGroupNum = 1;
 
                             tp.CurrentVSrcGroupNum = 1;
                             tp.CurrentRoomNum = touchpanel.DefaultRoom;
+                            CrestronConsole.PrintLine("touchpanel {0} name {1} type {2} currentroom {3}", touchpanel.Number, touchpanel.Name, touchpanel.Type, tp.CurrentRoomNum);
                             if (tp.Type == "Tsr310" || tp.Type == "HR310") {
                                 tp.CurrentPageNumber = 2;
                             }

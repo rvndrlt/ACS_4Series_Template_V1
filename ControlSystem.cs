@@ -326,6 +326,7 @@ namespace ACS_4Series_Template_V1
                     ushort TPNumber = (ushort)args.Sig.Number;
                     ushort asrc = TranslateButtonNumberToASrc((ushort)args.Sig.Number, args.Sig.UShortValue);//get the music source from the button number press
                     ushort currentRoomNum = manager.touchpanelZ[TPNumber].CurrentRoomNum;
+                    CrestronConsole.PrintLine("tp{0} currentroom{1}", TPNumber, currentRoomNum);
                     ushort switcherOutputNum = manager.RoomZ[currentRoomNum].AudioID;
                     PanelSelectMusicSource(TPNumber, asrc);
                     SwitcherSelectMusicSource(switcherOutputNum, asrc);
@@ -792,7 +793,10 @@ namespace ACS_4Series_Template_V1
         public void SelectZone(ushort TPNumber, ushort zoneListButtonNumber)
         {
             ushort currentRoomNumber;
-            if (zoneListButtonNumber > 0)
+            if (zoneListButtonNumber > 999) {
+                currentRoomNumber = manager.touchpanelZ[TPNumber].DefaultRoom;
+            }
+            else if (zoneListButtonNumber > 0)
             {
                 currentRoomNumber = manager.Floorz[manager.touchpanelZ[TPNumber].CurrentFloorNum].IncludedRooms[zoneListButtonNumber - 1];
             }
@@ -1399,6 +1403,7 @@ namespace ACS_4Series_Template_V1
             
                 subsystemEISC.BooleanInput[(ushort)(TPNumber + 200)].BoolValue = false;//clear flip to rooms
                 subsystemEISC.BooleanInput[(ushort)(TPNumber + 100)].BoolValue = true;//flip to home page
+                
                 if (homePageScenario > 0 && homePageScenario <= this.config.RoomConfig.WholeHouseSubsystemScenarios.Length) {
                     ushort numberOfSubs = (ushort)this.config.RoomConfig.WholeHouseSubsystemScenarios[homePageScenario-1].IncludedSubsystems.Count;
                     subsystemEISC.UShortInput[(ushort)(TPNumber)].UShortValue = numberOfSubs;
@@ -2285,12 +2290,20 @@ namespace ACS_4Series_Template_V1
                     }
                 }
             }
-            foreach (var tp in manager.touchpanelZ)
+            try
             {
-                ushort TPNumber = tp.Value.Number;
-                ushort currentRoomNumber = tp.Value.CurrentRoomNum;
-                HomeButtonPress(tp.Value.Number);
+                foreach (var tp in manager.touchpanelZ)
+                {
+                    ushort TPNumber = tp.Value.Number;
+                    //ushort currentRoomNumber = tp.Value.CurrentRoomNum;
+                    HomeButtonPress(tp.Value.Number);
+                }
             }
+            catch
+            {
+                CrestronConsole.PrintLine("crapped out");
+            }
+            CrestronConsole.PrintLine("startup rooms 2....");
         }
 
         public void InitializeMulticast() {
@@ -2589,15 +2602,17 @@ namespace ACS_4Series_Template_V1
                 }
                 
                 UpdateRoomAVConfig();
+                CrestronConsole.PrintLine("updateRoomAVConfig complete....");
                 StartupRooms();//this sets last system vid to true if no audio is found
-
+                CrestronConsole.PrintLine("StartupRooms complete....");
                 imageEISC.UShortInput[101].UShortValue = (ushort)quickActionManager.MusicPresetZ.Count;
                 for (ushort i = 1; i <= quickActionManager.MusicPresetZ.Count; i++) {
                     imageEISC.StringInput[(ushort)(i + 3100)].StringValue = quickActionManager.MusicPresetZ[i].PresetName;
                 }
-                
+                CrestronConsole.PrintLine("quickaction complete....");
                 subsystemEISC.BooleanInput[1].BoolValue = true;// tell the av program that this program has loaded
                 initComplete = true;
+                CrestronConsole.PrintLine(".....................INIT COMPLETE............................");
             }
             catch (Exception e)
             {
